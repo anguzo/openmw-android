@@ -37,7 +37,7 @@ set(MYGUI_VERSION 3.4.3)
 set(MYGUI_HASH SHA256=d1d5f294670ae71f7200ed4b30859018281d8cfd45d6a38d18b97a4aba604c42)
 
 # https://github.com/sisah2/gl4es/releases
-set(GL4ES_VERSION 37bdc17da1bb281b7010f7c41323a5f0ccdae987)
+set(GL4ES_VERSION 78fdb052c9d8e7b4dfe44814f4e64f7cd4ece86a)
 set(GL4ES_HASH SHA256=b565e717c7d192e936bda25f3cb90ad8db398af56414ec08294b6716574c1a6d)
 
 # https://github.com/openscenegraph/OpenSceneGraph/releases
@@ -56,7 +56,7 @@ set(LIBICU_VERSION 70-1)
 set(LIBICU_HASH SHA256=4013d7aff8a34bae410664bdb16554d7eda03654b22627b9284ab55a685492d4)
 
 # https://github.com/OpenMW/openmw/commits/master
-set(OPENMW_VERSION 3038d5c0b41a2aa5a04a9c397733a9b12ae026e9)
+set(OPENMW_VERSION 3e6fbd113fd079a5c83d3122a92d5f26e70e25c2)
 set(OPENMW_HASH SHA256=44d044ad0a5546216fe611fe92c37065bb07e2efeeeaac4f049dae03df313186)
 
 # End of configurable options
@@ -289,6 +289,7 @@ ExternalProject_Add(sdl2
 	URL_HASH ${SDL2_HASH}
 	DOWNLOAD_DIR ${download_dir}
 
+	PATCH_COMMAND patch -d <SOURCE_DIR> -p1 -t -N < ${CMAKE_SOURCE_DIR}/patches/sdl2-sensor.patch &&
 	PATCH_COMMAND patch -d <SOURCE_DIR> -p1 -t -N < ${CMAKE_SOURCE_DIR}/patches/sdl2-android-120hz-gyroscope.patch
 	COMMAND patch -d <SOURCE_DIR> -p1 -t -N < ${CMAKE_SOURCE_DIR}/patches/sdl2-disable-declaration-after-statement-warning.patch
 
@@ -535,6 +536,7 @@ set(OSG_PATCH
 	patch -d <SOURCE_DIR> -p1 -t -N < ${CMAKE_SOURCE_DIR}/patches/osg/force-add-plugins.patch &&
 	patch -d <SOURCE_DIR> -p1 -t -N < ${CMAKE_SOURCE_DIR}/patches/osg/dae_collada.patch &&
 	patch -d <SOURCE_DIR> -p1 -t -N < ${CMAKE_SOURCE_DIR}/patches/osg/mipmaps.patch &&
+	patch -d <SOURCE_DIR> -p1 -t -N < ${CMAKE_SOURCE_DIR}/patches/osg/cubic-filtering.patch &&
 	patch -d <SOURCE_DIR> -p1 -t -N < ${CMAKE_SOURCE_DIR}/patches/osg/0005-CullSettings-make-inheritanceMask-atomic-to-silence-.patch
 )
 
@@ -583,6 +585,7 @@ set(OPENMW_COMMON
 	-DOPENAL_INCLUDE_DIR=${prefix}/include/AL/
 	-DBullet_INCLUDE_DIR=${prefix}/include/bullet/
 	-DOSG_STATIC=TRUE
+	-DCMAKE_CXX_FLAGS=-std=gnu++20\ -I${prefix}/include/\ $ENV{CXXFLAGS}
 	-DMyGUI_LIBRARY=${prefix}/lib/libMyGUIEngineStatic.a
 )
 
